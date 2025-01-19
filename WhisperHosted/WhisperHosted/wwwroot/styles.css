@@ -1804,16 +1804,16 @@ html {
   width: 100%;
 }
 
+.max-w-2xl {
+  max-width: 42rem;
+}
+
 .max-w-md {
   max-width: 28rem;
 }
 
 .max-w-xs {
   max-width: 20rem;
-}
-
-.max-w-2xl {
-  max-width: 42rem;
 }
 
 .flex-1 {
@@ -1826,10 +1826,6 @@ html {
 
 .overflow-y-scroll {
   overflow-y: scroll;
-}
-
-.scroll-auto {
-  scroll-behavior: auto;
 }
 
 .bg-base-100 {

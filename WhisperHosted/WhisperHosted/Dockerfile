@@ -8,11 +8,12 @@ USER root
 RUN apt update
 RUN apt install -y git build-essential ffmpeg wget cmake
 RUN git clone https://github.com/ggerganov/whisper.cpp.git
-#RUN make -j base
 WORKDIR ./whisper.cpp
-RUN sh ./models/download-ggml-model.sh base.en
+#RUN make -j large-v3-turbo
+RUN sh ./models/download-ggml-model.sh base
 RUN cmake -B build
 RUN cmake --build build --config Release
+RUN ./build/bin/quantize models/ggml-base.bin models/ggml-base.q5_0.bin q5_0
 
 EXPOSE 8080
 EXPOSE 8081
@@ -34,27 +35,8 @@ FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "./WhisperHosted.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-# Stage 4: Add Whisper dependencies
-#FROM ubuntu:22.04 AS whisper
-#RUN apt update
-#RUN apt install -y git
-#RUN apt install -y build-essential wget cmake
-#RUN git clone https://github.com/ggerganov/whisper.cpp.git
-##RUN make -j base
-#WORKDIR ./whisper.cpp
-#RUN sh ./models/download-ggml-model.sh base.en
-#RUN cmake -B build
-#RUN cmake --build build --config Release
-# Pre-download Whisper model (adjust `base` to other models if needed)
-
-
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-# Copy Whisper binaries and pre-downloaded models
-#COPY --from=whisper ./whisper.cpp ./whisper.cpp
-# Set environment variables or volumes for Whisper
-ENV WHISPER_MODELS_PATH=/whisper/models
-ENV WHISPER_AUDIO_PATH=/whisper/audios
 ENTRYPOINT ["dotnet", "WhisperHosted.dll"]

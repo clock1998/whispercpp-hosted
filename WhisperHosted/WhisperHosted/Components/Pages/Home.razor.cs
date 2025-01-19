@@ -28,7 +28,7 @@ namespace WhisperHosted.Components.Pages
                 }
 
                 // Perform transcription using Whisper CLI ggml-large-v3-turbo.bin
-                if (!await RunProcessAsync("./whisper.cpp/build/bin/whisper-cli", $"-mc 0 -otxt -of \"{outputPath}\" -m ./whisper.cpp/models/ggml-base.en.bin -f \"{tempWavFilePath}\""))
+                if (!await RunProcessAsync("./whisper.cpp/build/bin/whisper-cli", $"-mc 0 -otxt -of \"{outputPath}\" -m ./whisper.cpp/models/ggml-base.bin -f \"{tempWavFilePath}\""))
                 {
                     throw new Exception("Transcription process failed.");
                 }
@@ -86,7 +86,7 @@ namespace WhisperHosted.Components.Pages
                             await module.InvokeVoidAsync("scrollToBottom", progressDiv);
                         }
                     }
-                    await Task.Delay(100); // Prevents tight-looping
+                    // await Task.Delay(100); // Prevents tight-looping
                 }
 
                 string standardError = await process.StandardError.ReadToEndAsync();
