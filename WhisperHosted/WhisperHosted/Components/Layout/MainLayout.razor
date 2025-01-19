@@ -1,30 +1,52 @@
 ﻿@inherits LayoutComponentBase
-
 <div class="navbar bg-base-100 z-10 fixed">
-    <div class="flex-1">
-        <a class="btn btn-ghost text-xl">Whisper Hosted</a>
+    <div class="navbar-start lg:flex">
+        <NavLink class="btn btn-ghost text-xl" href="" Match="NavLinkMatch.All">
+            Whisper Hosted
+        </NavLink>
     </div>
-    <div class="flex-none">
-        <ul class="menu menu-horizontal px-1">
+    <div class="navbar-end">
+        <div class="dropdown flex lg:hidden">
+            <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="h-5 w-5"
+                     fill="none"
+                     viewBox="0 0 24 24"
+                     stroke="currentColor">
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M4 6h16M4 12h8m-8 6h16" />
+                </svg>
+            </div>
+            <ul tabindex="0"
+                class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+                <li>
+                    <NavLink href="https://github.com/clock1998/WhisperHosted">
+                        <i class="fa-brands fa-github fa-lg"></i> GitHub
+                    </NavLink>
+                </li>
+                <li>
+                    <NavLink href="about">
+                        About
+                    </NavLink>
+                </li>
+            </ul>
+        </div>
+        <ul class="menu menu-horizontal hidden px-1 lg:flex">
             <li>
                 <NavLink href="https://github.com/clock1998/WhisperHosted">
                     <i class="fa-brands fa-github fa-xl"></i> GitHub
                 </NavLink>
             </li>
             <li>
-                <NavLink href="" Match="NavLinkMatch.All">
-                    Home
-                </NavLink>
-            </li>
-            <li>
-                <NavLink href="about" >
+                <NavLink href="about">
                     About
                 </NavLink>
             </li>
         </ul>
     </div>
 </div>
-
 <main>
     @Body
 </main>
