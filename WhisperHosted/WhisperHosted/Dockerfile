@@ -15,8 +15,8 @@ RUN cmake -B build
 RUN cmake --build build --config Release
 RUN ./build/bin/quantize models/ggml-base.bin models/ggml-base.q5_0.bin q5_0
 
-EXPOSE 8080
-EXPOSE 8081
+EXPOSE 5000
+EXPOSE 5001
 
 
 # This stage is used to build the service project

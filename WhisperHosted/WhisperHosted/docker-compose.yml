@@ -1,0 +1,14 @@
+networks:
+      tunnel:
+        external: true
+services:
+  spikylin-blog:
+    networks:
+      - tunnel
+    ports:
+      - 5000:5000
+    image: ghcr.io/clock1998/whisper-hosted:latest
+    container_name: whisper-hosted
+    restart: always
+
+# docker compose -p services up -d
