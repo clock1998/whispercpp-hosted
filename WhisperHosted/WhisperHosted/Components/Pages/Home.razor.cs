@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using Microsoft.JSInterop;
+using System.Diagnostics;
 
 namespace WhisperHosted.Components.Pages
 {
@@ -72,13 +73,28 @@ namespace WhisperHosted.Components.Pages
                 };
 
                 process.Start();
-                string standardOutput = await process.StandardOutput.ReadToEndAsync();
+                while (!process.HasExited)
+                {
+                    if (!process.StandardOutput.EndOfStream)
+                    {
+                        string? line = await process.StandardOutput.ReadLineAsync();
+                        if (line != null)
+                        {
+                            whisperProgress += line + "\n";
+                            Logger.LogInformation("Updating UI with progress: {line}", line);
+                            StateHasChanged();
+                            await module.InvokeVoidAsync("scrollToBottom", progressDiv);
+                        }
+                    }
+                    await Task.Delay(100); // Prevents tight-looping
+                }
+
                 string standardError = await process.StandardError.ReadToEndAsync();
                 await process.WaitForExitAsync();
 
                 if (process.ExitCode != 0)
                 {
-                    throw new Exception($"Process failed with exit code {process.ExitCode}.\nStandard Output: {standardOutput}\nStandard Error: {standardError}");
+                    throw new Exception($"Process failed with exit code {process.ExitCode}.\nStandard Error: {standardError}");
                 }
 
 

@@ -12,3 +12,9 @@
 export function showPrompt1(message) {
     return prompt(message, 'Type your name here');
 }
+
+export function scrollToBottom(element) {
+    if (element) {
+        element.scrollTop = element.scrollHeight;
+    }
+}

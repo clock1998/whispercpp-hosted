@@ -1792,6 +1792,10 @@ html {
   display: table;
 }
 
+.max-h-96 {
+  max-height: 24rem;
+}
+
 .min-h-screen {
   min-height: 100vh;
 }
@@ -1808,12 +1812,24 @@ html {
   max-width: 20rem;
 }
 
+.max-w-2xl {
+  max-width: 42rem;
+}
+
 .flex-1 {
   flex: 1 1 0%;
 }
 
 .flex-none {
   flex: none;
+}
+
+.overflow-y-scroll {
+  overflow-y: scroll;
+}
+
+.scroll-auto {
+  scroll-behavior: auto;
 }
 
 .bg-base-100 {
