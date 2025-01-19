@@ -35,11 +35,6 @@ namespace WhisperHosted.Components.Pages
 
                 return Path.ChangeExtension(outputPath, ".txt");
             }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex.Message);
-                throw ex;
-            }
             finally
             {
                 // Ensure cleanup of temporary files
