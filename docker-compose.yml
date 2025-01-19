@@ -2,11 +2,11 @@ networks:
       tunnel:
         external: true
 services:
-  spikylin-blog:
+  whisper-hosted:
     networks:
       - tunnel
     ports:
-      - 5000:5000
+      - 5000:8080
     image: ghcr.io/clock1998/whisper-hosted:latest
     container_name: whisper-hosted
     restart: always
