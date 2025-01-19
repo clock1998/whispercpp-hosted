@@ -1,0 +1,170 @@
+﻿@page "/"
+@inject ILogger<Home> Logger
+@inject IWebHostEnvironment Environment
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+@using System 
+@using System.IO
+@using Microsoft.AspNetCore.Hosting
+
+@rendermode InteractiveServer
+
+<PageTitle>Home</PageTitle>
+<div class="hero bg-base-200 min-h-screen">
+    <div class="hero-content text-center">
+        <div class="max-w-md">
+            <label>
+                Upload up to @maxAllowedFiles of up to @(maxFileSize / 1048576) MB:
+                <InputFile OnChange="LoadFiles" multiple />
+            </label>
+            @*             <button @onclick="DownloadFileFromStream">
+                Download File From Stream
+            </button> *@
+            @* <form method="post" @onsubmit="Submit" @formname="file-form">
+                <AntiforgeryToken />
+                <div>
+                    <InputFile OnChange="LoadFiles" multiple class="file-input file-input-ghost w-full max-w-xs" />
+                </div>
+                <div>
+                    <button type="submit">Submit</button>
+                </div>
+            </form> *@
+            @if (isLoading)
+            {
+                <p>Progress: @string.Format("{0:P0}", progressPercent)</p>
+            }
+            else
+            {
+                <ul>
+                    @foreach (var file in loadedFiles)
+                    {
+                        <li>
+                            <ul>
+                                <li>Name: @file.Name</li>
+                                <li>Last modified: @file.LastModified.ToString()</li>
+                                <li>Size (bytes): @file.Size</li>
+                                <li>Content type: @file.ContentType</li>
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private IJSObjectReference? module;
+
+    // protected override void OnInitialized();
+
+    private List<IBrowserFile> loadedFiles = new();
+    private long maxFileSize = 50 * 1048576; //50MB
+    private int maxAllowedFiles = 3;
+    private bool isLoading;
+    private decimal progressPercent;
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            /*
+            Change the {PATH} placeholder in the next line to the path of
+            the collocated JS file in the app. Examples:
+
+            ./Components/Pages/JsCollocation2.razor.js (.NET 8 or later)
+            ./Pages/JsCollocation2.razor.js (.NET 7 or earlier)
+            */
+            module = await JS.InvokeAsync<IJSObjectReference>("import",
+                "./Components/Pages/Home.razor.js");
+        }
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (module is not null)
+        {
+            try
+            {
+                await module.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+            }
+        }
+    }
+
+
+    // private Stream GetFileStream()
+    // {
+    //     var randomBinaryData = new byte[50 * 1024];
+    //     var fileStream = new MemoryStream(randomBinaryData);
+
+    //     return fileStream;
+    // }
+
+    private async Task DownloadFileFromStream(Stream fileStream, string fileName)
+    {
+        using var streamRef = new DotNetStreamReference(stream: fileStream);
+        if (module is not null){
+            await module.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
+        }
+    }
+
+    // InputFileChangeEventArgs provides access to the selected file list and details about each file
+    private async Task LoadFiles(InputFileChangeEventArgs e)
+    {
+        isLoading = true;
+        loadedFiles.Clear();
+        // Define a static folder for unsafe uploads
+        var uploadsFolderPath = Path.Combine(Environment.ContentRootPath, "unsafe_uploads");
+        // Ensure the folder exists
+        if (!Directory.Exists(uploadsFolderPath))
+        {
+            Directory.CreateDirectory(uploadsFolderPath);
+        }
+        foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
+        {
+            try
+            {
+                var trustedFileName = Path.GetRandomFileName();
+                trustedFileName = Path.ChangeExtension(trustedFileName, "m4a");
+                var path = Path.Combine(uploadsFolderPath, trustedFileName);
+
+                await using FileStream writeStream = new(path, FileMode.Create);
+                using var readStream = file.OpenReadStream(maxFileSize);
+                var bytesRead = 0;
+                var totalRead = 0;
+                var buffer = new byte[1024 * 10];
+
+                while ((bytesRead = await readStream.ReadAsync(buffer)) != 0)
+                {
+                    totalRead += bytesRead;
+                    await writeStream.WriteAsync(buffer, 0, bytesRead);
+                    progressPercent = Decimal.Divide(totalRead, file.Size);
+                    StateHasChanged();
+                }
+
+                loadedFiles.Add(file);
+
+                Logger.LogInformation(
+                    "Unsafe Filename: {UnsafeFilename} File saved: {Filename}",
+                    file.Name, trustedFileName);
+
+                var transcribedFilePath = await TranscribeAudioAsync(path);
+                // for reading the file
+                using FileStream transcribedFileStream = File.Open(transcribedFilePath, FileMode.Open);
+                await DownloadFileFromStream(transcribedFileStream, Path.GetFileName(transcribedFilePath));
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("File: {FileName} Error: {Error}",
+                    file.Name, ex.Message);
+            }
+        }
+
+        isLoading = false;
+    }
+}

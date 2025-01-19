@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>efafbd5f-1819-499e-9d2d-60b7dc6db71b</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..</DockerfileContext>
+	<ContainerDevelopmentMode>Regular</ContainerDevelopmentMode>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WhisperHosted.Client\WhisperHosted.Client.csproj" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="unsafe_uploads\" />
+    <Folder Include="wwwroot\lib\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Components\Pages\Home.razor" />
+  </ItemGroup>
+    <Target Name="Tailwind" BeforeTargets="Compile">
+	    <Exec Command="npx tailwindcss -i ./Styles/tailwind.css -o ./wwwroot/styles.css" />
+    </Target>
+	<Target Name="Tailwind" BeforeTargets="Compile" Condition="'$(Configuration)' == 'Release'">
+		<Exec EnvironmentVariables="NODE_ENV=production" Command="npx tailwindcss -i ./Styles/tailwind.css -o ./wwwroot/tailwind.css --minify" />
+	</Target>
+</Project>
