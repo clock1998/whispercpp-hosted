@@ -1193,10 +1193,6 @@ html {
   justify-content: flex-start;
 }
 
-.navbar-center {
-  flex-shrink: 0;
-}
-
 .navbar-end {
   width: 50%;
   justify-content: flex-end;
@@ -1728,14 +1724,6 @@ html {
 
 .max-w-xs {
   max-width: 20rem;
-}
-
-.flex-1 {
-  flex: 1 1 0%;
-}
-
-.flex-none {
-  flex: none;
 }
 
 .flex-col {
