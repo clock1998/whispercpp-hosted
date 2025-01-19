@@ -4,16 +4,60 @@
 # https://aka.ms/yaml
 
 trigger:
-- master
+- main
 
+variables:
+  container-registry: 'ghcr.io'
+  container-repository: 'clock1998/whisper-hosted'
+  container-name: 'whisper-hosted'
+  tag: 'latest'
 pool:
-  vmImage: ubuntu-latest
-
+  name: Azure Selfhosted
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+- task: CmdLine@2
+  displayName: Clean docker cache
+  inputs:
+    script: 'docker builder prune -f'
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+- task: Docker@2
+  displayName: Docker Build
+  inputs:
+    command: 'build'
+    Dockerfile: 'Dockerfile'
+    containerRegistry: $(container-registry)
+    repository: $(container-repository)
+    tags: $(tag)
+
+- task: CmdLine@2
+  displayName: Docker Login
+  inputs:
+    script: 'docker login --username clock1998 --password $(GITHUB-TOKEN) ghcr.io'
+
+- task: CmdLine@2
+  displayName: Docker Push
+  inputs:
+    script: 'docker push $(container-registry)/$(container-repository):$(tag)'
+  # inputs:
+  #   containerRegistry: $(container-registry)
+  #   command: 'push'
+  #   repository: $(container-repository)
+  #   tags: $(tag)
+- task: CmdLine@2
+  displayName: Clean docker cache
+  inputs:
+    script: | 
+      docker builder prune -f
+      docker image prune -f
+- task: CopyFiles@2
+  displayName: Copy docker compose file.
+  inputs:
+    SourceFolder: './WhispterHosted'
+    Contents: 'docker-compose.yml'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    OverWrite: true
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
