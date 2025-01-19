@@ -23,7 +23,7 @@ steps:
   displayName: Docker Build
   inputs:
     command: 'build'
-    Dockerfile: 'Dockerfile'
+    Dockerfile: './WhisperHosted/Dockerfile'
     containerRegistry: $(container-registry)
     repository: $(container-repository)
     tags: $(tag)
