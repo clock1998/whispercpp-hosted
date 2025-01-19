@@ -51,7 +51,7 @@ steps:
 - task: CopyFiles@2
   displayName: Copy docker compose file.
   inputs:
-    SourceFolder: './WhispterHosted'
+    SourceFolder: './'
     Contents: 'docker-compose.yml'
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
     OverWrite: true
