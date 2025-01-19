@@ -14,9 +14,11 @@
 <div class="hero bg-base-200 min-h-screen">
     <div class="hero-content text-center">
         <div class="max-w-md">
-            <label>
-                Upload up to @maxAllowedFiles of up to @(maxFileSize / 1048576) MB:
-                <InputFile OnChange="LoadFiles" multiple />
+            <label class="form-control w-full max-w-xs">
+                <div class="label">
+                    <span class="label-text">Upload up to @maxAllowedFiles of up to @(maxFileSize / 1048576) MB:</span>
+                </div>
+                <InputFile OnChange="LoadFiles" multiple class="file-input file-input-bordered w-full max-w-xs" />
             </label>
             @*             <button @onclick="DownloadFileFromStream">
                 Download File From Stream
@@ -30,8 +32,8 @@
                     <button type="submit">Submit</button>
                 </div>
             </form> *@
-            <p>Progress: @string.Format("{0:P0}", progressPercent)</p>
             <div @ref="progressDiv" class="max-h-96 max-w-2xl overflow-y-scroll">
+                <p>Progress: @string.Format("{0:P0}", progressPercent)</p>
                 @whisperProgress
             </div>
         </div>
@@ -110,13 +112,14 @@
         {
             Directory.CreateDirectory(uploadsFolderPath);
         }
+        string path = "";
         foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
         {
             try
             {
                 var trustedFileName = Path.GetRandomFileName();
                 // trustedFileName = Path.ChangeExtension(trustedFileName, "m4a");
-                var path = Path.Combine(uploadsFolderPath, trustedFileName);
+                path = Path.Combine(uploadsFolderPath, trustedFileName);
 
                 await using FileStream writeStream = new(path, FileMode.Create);
                 using var readStream = file.OpenReadStream(maxFileSize);
@@ -138,7 +141,6 @@
                     "Unsafe Filename: {UnsafeFilename} File saved: {Filename}",
                     file.Name, trustedFileName);
 
-                isLoading = false;
                 // Ensure all data is written to the file
                 await writeStream.FlushAsync();
                 writeStream.Close();
@@ -153,9 +155,12 @@
                 // for reading the file
                 using FileStream transcribedFileStream = File.Open(transcribedFilePath, FileMode.Open);
                 await DownloadFileFromStream(transcribedFileStream, Path.GetFileName(transcribedFilePath));
+                Cleanup(path);
+                Cleanup(transcribedFilePath);
             }
             catch (Exception ex)
             {
+                Cleanup(path);
                 Logger.LogError("File: {FileName} Error: {Error}",
                     file.Name, ex.Message);
             }

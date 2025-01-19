@@ -1001,6 +1001,11 @@ html {
   animation: button-pop var(--animation-btn, 0.25s) ease-out;
 }
 
+.form-control {
+  display: flex;
+  flex-direction: column;
+}
+
 .label {
   display: flex;
   -webkit-user-select: none;
@@ -1357,6 +1362,10 @@ html {
   }
 }
 
+.file-input-bordered {
+  --tw-border-opacity: 0.2;
+}
+
 .file-input:focus {
   outline-style: solid;
   outline-width: 2px;
@@ -1409,6 +1418,13 @@ html {
   --tw-bg-opacity: 0.2;
   color: var(--fallback-bc,oklch(var(--bc)/var(--tw-text-opacity)));
   --tw-text-opacity: 0.2;
+}
+
+.label-text {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  --tw-text-opacity: 1;
+  color: var(--fallback-bc,oklch(var(--bc)/var(--tw-text-opacity)));
 }
 
 .input input {
