@@ -23,11 +23,10 @@ steps:
   displayName: Docker Build
   inputs:
     command: 'build'
-    Dockerfile: './WhisperHosted/WhisperHosted/Dockerfile'
+    Dockerfile: 'Dockerfile'
     containerRegistry: $(container-registry)
     repository: $(container-repository)
     tags: $(tag)
-    buildContext: '../../'
 
 - task: CmdLine@2
   displayName: Docker Login
