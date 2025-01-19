@@ -28,6 +28,10 @@ COPY ["WhisperHosted/WhisperHosted.Client/WhisperHosted.Client.csproj", "Whisper
 RUN dotnet restore "./WhisperHosted/WhisperHosted/WhisperHosted.csproj"
 COPY . .
 WORKDIR "/src/WhisperHosted/WhisperHosted"
+RUN apt update
+RUN apt install -y nodejs
+RUN apt install -y npm
+RUN npm i -D daisyui@latest
 RUN dotnet build "./WhisperHosted.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage

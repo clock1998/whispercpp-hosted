@@ -27,6 +27,6 @@
 	    <Exec Command="npx tailwindcss -i ./Styles/tailwind.css -o ./wwwroot/styles.css" />
     </Target>
 	<Target Name="Tailwind" BeforeTargets="Compile" Condition="'$(Configuration)' == 'Release'">
-		<Exec EnvironmentVariables="NODE_ENV=production" Command="npx tailwindcss -i ./Styles/tailwind.css -o ./wwwroot/tailwind.css --minify" />
+		<Exec EnvironmentVariables="NODE_ENV=production" Command="npx tailwindcss -i ./Styles/tailwind.css -o ./wwwroot/styles.css --minify" />
 	</Target>
 </Project>
