@@ -27,7 +27,7 @@ steps:
     containerRegistry: $(container-registry)
     repository: $(container-repository)
     tags: $(tag)
-    buildContext: '../../..'
+    buildContext: '../../'
 
 - task: CmdLine@2
   displayName: Docker Login
