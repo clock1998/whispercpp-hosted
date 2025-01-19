@@ -4,7 +4,7 @@
 # https://aka.ms/yaml
 
 trigger:
-- main
+- master
 
 variables:
   container-registry: 'ghcr.io'
@@ -27,6 +27,7 @@ steps:
     containerRegistry: $(container-registry)
     repository: $(container-repository)
     tags: $(tag)
+    buildContext: '../..'
 
 - task: CmdLine@2
   displayName: Docker Login
