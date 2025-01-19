@@ -10,7 +10,7 @@
 
 @rendermode InteractiveServer
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Whisper Hosted</PageTitle>
 <div class="hero bg-base-200 min-h-screen">
     <div class="hero-content text-center">
         <div class="max-w-md">
@@ -20,18 +20,6 @@
                 </div>
                 <InputFile OnChange="LoadFiles" multiple class="file-input file-input-bordered w-full max-w-xs" />
             </label>
-            @*             <button @onclick="DownloadFileFromStream">
-                Download File From Stream
-            </button> *@
-            @* <form method="post" @onsubmit="Submit" @formname="file-form">
-                <AntiforgeryToken />
-                <div>
-                    <InputFile OnChange="LoadFiles" multiple class="file-input file-input-ghost w-full max-w-xs" />
-                </div>
-                <div>
-                    <button type="submit">Submit</button>
-                </div>
-            </form> *@
             <div @ref="progressDiv" class="max-h-96 max-w-2xl overflow-y-scroll">
                 <p>Progress: @string.Format("{0:P0}", progressPercent)</p>
                 @whisperProgress
@@ -49,7 +37,6 @@
     private List<IBrowserFile> loadedFiles = new();
     private long maxFileSize = 50 * 1048576; //50MB
     private int maxAllowedFiles = 3;
-    private bool isLoading;
     private decimal progressPercent;
     private string whisperProgress="";
     private ElementReference progressDiv;
@@ -103,7 +90,6 @@
     // InputFileChangeEventArgs provides access to the selected file list and details about each file
     private async Task LoadFiles(InputFileChangeEventArgs e)
     {
-        isLoading = true;
         loadedFiles.Clear();
         // Define a static folder for unsafe uploads
         var uploadsFolderPath = Path.Combine(Environment.ContentRootPath, "unsafe_uploads");

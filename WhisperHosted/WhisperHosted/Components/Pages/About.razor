@@ -1,0 +1,35 @@
+﻿@page "/about"
+
+<PageTitle>About</PageTitle>
+<div class="hero bg-base-200 min-h-screen">
+    <div class="hero-content prose flex-col lg:flex-row">
+        <article class="prose">
+            <h1>
+                I'm Linyi, welcome to my self-hosted whisper.cpp app.
+            </h1>
+
+            <p>
+                I used Blazor Web App to develop this web app.
+
+                The current language model is the base model provided by whisper.cpp, as my server does not have a GPU.
+
+                How does it work?
+
+                Users will upload files to the web server. The file will be saved at a temperary location. The web server will start a process calling ffmpeg to convert the file to mav, then it will call whisper.cpp cli to process the file. Once the file is processed, it will initiate a download automatically.
+
+                🖖
+            </p>
+
+            <h2>Future work: </h2>
+            <ul>
+                <li>
+                    Add GPU support.
+                </li>
+                <li>
+                    Change to large model.
+                </li>
+            </ul>
+        </article>
+
+    </div>
+</div>
