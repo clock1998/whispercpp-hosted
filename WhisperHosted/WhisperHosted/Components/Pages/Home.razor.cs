@@ -6,10 +6,11 @@ namespace WhisperHosted.Components.Pages
     {
         public async Task<string> TranscribeAudioAsync(string inputPath)
         {
-            string tempWavFile = Path.ChangeExtension(Path.GetRandomFileName(), ".wav");
-            string outputPath = Path.Combine(Path.GetDirectoryName(inputPath), Path.GetFileNameWithoutExtension(inputPath)); // Default output path with .txt extension
+            string tempWavFilePath = Path.Combine(Path.GetDirectoryName(inputPath)!, Path.ChangeExtension(Path.GetRandomFileName(), ".wav")) ;
+            
+            string outputPath = Path.Combine(Path.GetDirectoryName(inputPath)!, Path.GetFileNameWithoutExtension(inputPath)); // Default output path with .txt extension
             // Register cleanup on exit
-            AppDomain.CurrentDomain.ProcessExit += (sender, e) => Cleanup(tempWavFile);
+            AppDomain.CurrentDomain.ProcessExit += (sender, e) => Cleanup(tempWavFilePath);
 
             try
             {
@@ -20,23 +21,28 @@ namespace WhisperHosted.Components.Pages
                 }
 
                 // Convert the input audio file to WAV format ffmpeg -i "./unsafe_uploads/jpn1gcl1.m4a" -ar 16000 -ac 1 -c:a pcm_s16le "asd.wav"
-                if (!await RunProcessAsync("ffmpeg", $"-i \"{inputPath}\" -ar 16000 -ac 1 -c:a pcm_s16le \"{tempWavFile}\""))
+                if (!await RunProcessAsync("ffmpeg", $"-i \"{inputPath}\" -ar 16000 -ac 1 -c:a pcm_s16le \"{tempWavFilePath}\""))
                 {
                     throw new Exception("Failed to convert audio file to WAV format.");
                 }
 
                 // Perform transcription using Whisper CLI ggml-large-v3-turbo.bin
-                if (!await RunProcessAsync("./whisper.cpp/build/bin/whisper-cli", $"-mc 0 -otxt -of \"{outputPath}\" -m ./whisper.cpp/models/ggml-base.en.bin -f \"{tempWavFile}\""))
+                if (!await RunProcessAsync("./whisper.cpp/build/bin/whisper-cli", $"-mc 0 -otxt -of \"{outputPath}\" -m ./whisper.cpp/models/ggml-base.en.bin -f \"{tempWavFilePath}\""))
                 {
                     throw new Exception("Transcription process failed.");
                 }
 
                 return Path.ChangeExtension(outputPath, ".txt");
             }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.Message);
+                throw ex;
+            }
             finally
             {
                 // Ensure cleanup of temporary files
-                Cleanup(tempWavFile);
+                Cleanup(tempWavFilePath);
             }
         }
 

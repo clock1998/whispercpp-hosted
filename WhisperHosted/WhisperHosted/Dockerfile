@@ -4,6 +4,16 @@
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 USER $APP_UID
 WORKDIR /app
+USER root
+RUN apt update
+RUN apt install -y git build-essential ffmpeg wget cmake
+RUN git clone https://github.com/ggerganov/whisper.cpp.git
+#RUN make -j base
+WORKDIR ./whisper.cpp
+RUN sh ./models/download-ggml-model.sh base.en
+RUN cmake -B build
+RUN cmake --build build --config Release
+
 EXPOSE 8080
 EXPOSE 8081
 
@@ -40,18 +50,6 @@ RUN dotnet publish "./WhisperHosted.csproj" -c $BUILD_CONFIGURATION -o /app/publ
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
-USER root
-WORKDIR /app
-RUN apt update
-RUN apt install -y git
-RUN apt install -y build-essential ffmpeg  wget cmake
-RUN git clone https://github.com/ggerganov/whisper.cpp.git
-#RUN make -j base
-WORKDIR ./whisper.cpp
-RUN sh ./models/download-ggml-model.sh base.en
-RUN cmake -B build
-RUN cmake --build build --config Release
-
 WORKDIR /app
 COPY --from=publish /app/publish .
 # Copy Whisper binaries and pre-downloaded models

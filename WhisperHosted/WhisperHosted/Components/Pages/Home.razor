@@ -130,7 +130,7 @@
             try
             {
                 var trustedFileName = Path.GetRandomFileName();
-                trustedFileName = Path.ChangeExtension(trustedFileName, "m4a");
+                // trustedFileName = Path.ChangeExtension(trustedFileName, "m4a");
                 var path = Path.Combine(uploadsFolderPath, trustedFileName);
 
                 await using FileStream writeStream = new(path, FileMode.Create);
@@ -152,6 +152,16 @@
                 Logger.LogInformation(
                     "Unsafe Filename: {UnsafeFilename} File saved: {Filename}",
                     file.Name, trustedFileName);
+
+                // Ensure all data is written to the file
+                await writeStream.FlushAsync();
+                writeStream.Close();
+                // Verify the file size matches the expected size
+                if (new FileInfo(path).Length != file.Size)
+                {
+                    Logger.LogError("File size mismatch: expected {ExpectedSize}, actual {ActualSize}", file.Size, new FileInfo(path).Length);
+                    throw new InvalidOperationException("Uploaded file is incomplete.");
+                }
 
                 var transcribedFilePath = await TranscribeAudioAsync(path);
                 // for reading the file
