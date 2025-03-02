@@ -8,8 +8,8 @@ trigger:
 
 variables:
   container-registry: 'ghcr.io'
-  container-repository: 'clock1998/whisper-hosted'
-  container-name: 'whisper-hosted'
+  container-repository: 'clock1998/whispercpp-hosted'
+  container-name: 'whispercpp-hosted'
   tag: 'latest'
 pool:
   name: Azure Selfhosted
