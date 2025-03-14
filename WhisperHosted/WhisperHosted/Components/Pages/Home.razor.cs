@@ -28,7 +28,7 @@ namespace WhisperHosted.Components.Pages
                 }
 
                 // Perform transcription using Whisper CLI ggml-large-v3-turbo.bin
-                if (!await RunProcessAsync("./whisper.cpp/build/bin/whisper-cli", $"-mc 0 -otxt -of \"{outputPath}\" -m ./whisper.cpp/models/ggml-base.q5_0.bin -f \"{tempWavFilePath}\""))
+                if (!await RunProcessAsync("./whisper.cpp/build/bin/whisper-cli", $"-mc 0 -otxt -of \"{outputPath}\" -m ./whisper.cpp/models/ggml-large-v3-turbo.q5_0.bin -f \"{tempWavFilePath}\""))
                 {
                     throw new Exception("Transcription process failed.");
                 }

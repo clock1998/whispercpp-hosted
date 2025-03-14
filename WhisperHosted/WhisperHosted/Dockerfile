@@ -10,10 +10,10 @@ RUN apt install -y git build-essential ffmpeg wget cmake
 RUN git clone https://github.com/ggerganov/whisper.cpp.git
 WORKDIR /app/whisper.cpp
 #RUN make -j large-v3-turbo
-RUN sh ./models/download-ggml-model.sh base
+RUN sh ./models/download-ggml-model.sh large-v3-turbo
 RUN cmake -B build
 RUN cmake --build build --config Release
-RUN ./build/bin/quantize models/ggml-base.bin models/ggml-base.q5_0.bin q5_0
+RUN ./build/bin/quantize models/ggml-large-v3-turbo.bin models/ggml-large-v3-turbo.q5_0.bin q5_0
 EXPOSE 5000
 EXPOSE 5001
 
