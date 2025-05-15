@@ -23,10 +23,10 @@
   <ItemGroup>
     <None Include="Components\Pages\Home.razor" />
   </ItemGroup>
-    <Target Name="Tailwind" BeforeTargets="Compile">
+    <Target Name="TailwindDevelopment" BeforeTargets="Compile">
 	    <Exec Command="npx tailwindcss -i ./Styles/tailwind.css -o ./wwwroot/styles.css" />
     </Target>
-	<Target Name="Tailwind" BeforeTargets="Compile" Condition="'$(Configuration)' == 'Release'">
+	<Target Name="TailwindRelease" BeforeTargets="Compile" Condition="'$(Configuration)' == 'Release'">
 		<Exec EnvironmentVariables="NODE_ENV=production" Command="npx tailwindcss -i ./Styles/tailwind.css -o ./wwwroot/styles.css --minify" />
 	</Target>
 </Project>
